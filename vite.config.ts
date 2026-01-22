@@ -3,7 +3,14 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
+// When deploying to GitHub Pages (project pages), assets must be served from
+// https://<user>.github.io/<repo>/, so we set Vite's `base` accordingly.
+const ghRepo = process.env.GITHUB_REPOSITORY?.split("/")?.[1];
+const ghBase =
+  process.env.GITHUB_ACTIONS === "true" && ghRepo ? `/${ghRepo}/` : "/";
+
 export default defineConfig({
+  base: ghBase,
   plugins: [
     react(),
     runtimeErrorOverlay(),
