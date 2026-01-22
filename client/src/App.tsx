@@ -1,4 +1,4 @@
-import { Switch, Route, useLocation } from "wouter";
+import { Switch, Route, Router as WouterRouter } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -38,9 +38,14 @@ function App() {
     document.documentElement.lang = "ar";
   }, []);
 
+  // GitHub Pages base path (e.g. /Islam-World/)
+  const base =
+    import.meta.env.BASE_URL === "/" ? "" : import.meta.env.BASE_URL.replace(/\/$/, "");
+
   return (
     <QueryClientProvider client={queryClient}>
-      {showSplash ? (
+      <WouterRouter base={base}>
+        {showSplash ? (
         <Splash onComplete={() => setShowSplash(false)} />
       ) : (
         <div className="min-h-screen bg-background text-foreground font-amiri dir-rtl">
@@ -53,6 +58,7 @@ function App() {
           <Toaster />
         </div>
       )}
+      </WouterRouter>
     </QueryClientProvider>
   );
 }
