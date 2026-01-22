@@ -1,21 +1,60 @@
 import { useChapters } from "@/hooks/use-quran";
 import { PageTransition } from "@/components/PageTransition";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
-import { Search, BookOpen } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Search, BookOpen, CornerDownLeft } from "lucide-react";
 import { Link } from "wouter";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+
+type LastReadPosition = {
+  chapterId: number;
+  verseNumber: number;
+  verseKey: string;
+  updatedAt: string;
+};
+
+const LAST_READ_KEY = "lastReadPosition";
+
+function safeReadLastPosition(): LastReadPosition | null {
+  try {
+    const raw = localStorage.getItem(LAST_READ_KEY);
+    if (!raw) return null;
+    const obj = JSON.parse(raw);
+    if (
+      typeof obj?.chapterId !== "number" ||
+      typeof obj?.verseNumber !== "number" ||
+      typeof obj?.verseKey !== "string"
+    ) {
+      return null;
+    }
+    return obj as LastReadPosition;
+  } catch {
+    return null;
+  }
+}
 
 export default function Quran() {
   const { data: chapters, isLoading } = useChapters();
   const [search, setSearch] = useState("");
+  const [lastRead, setLastRead] = useState<LastReadPosition | null>(null);
 
-  const filteredChapters = chapters?.filter(
-    (c) =>
-      c.name_arabic.includes(search) ||
-      c.name_simple.toLowerCase().includes(search.toLowerCase())
-  );
+  useEffect(() => {
+    setLastRead(safeReadLastPosition());
+  }, []);
+
+  const filteredChapters = useMemo(() => {
+    return chapters?.filter(
+      (c) =>
+        c.name_arabic.includes(search) ||
+        c.name_simple.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [chapters, search]);
+
+  const lastChapter = useMemo(() => {
+    if (!chapters || !lastRead) return null;
+    return chapters.find((c) => c.id === lastRead.chapterId) || null;
+  }, [chapters, lastRead]);
 
   return (
     <PageTransition>
@@ -23,6 +62,30 @@ export default function Quran() {
         <h1 className="text-4xl font-bold font-amiri text-primary">القرآن الكريم</h1>
         <p className="text-muted-foreground">اقرأ وتدبر في آيات الله</p>
       </header>
+
+      {/* Continue reading */}
+      {lastRead && lastChapter && (
+        <div className="max-w-3xl mx-auto mb-8">
+          <Link href={`/quran/${lastRead.chapterId}?v=${lastRead.verseNumber}`}>
+            <div className="group cursor-pointer rounded-3xl border border-accent/20 bg-accent/5 hover:bg-accent/10 transition-all p-5 md:p-6 flex items-center justify-between">
+              <div className="space-y-1 text-right">
+                <p className="text-sm text-muted-foreground">اكمل القراءة</p>
+                <p className="text-xl font-bold font-amiri text-foreground group-hover:text-primary transition-colors">
+                  سورة {lastChapter.name_arabic} — الآية {lastRead.verseNumber}
+                </p>
+                <p className="text-xs text-muted-foreground">{lastRead.verseKey}</p>
+              </div>
+              <Button
+                variant="secondary"
+                className="rounded-2xl gap-2 bg-white/70 hover:bg-white border border-accent/20"
+              >
+                <CornerDownLeft className="w-4 h-4" />
+                متابعة
+              </Button>
+            </div>
+          </Link>
+        </div>
+      )}
 
       <div className="relative mb-8 max-w-md mx-auto">
         <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground h-5 w-5" />
@@ -63,7 +126,7 @@ export default function Quran() {
                     <BookOpen className="w-5 h-5" />
                   </div>
                 </div>
-                
+
                 {/* Decorative corner */}
                 <div className="absolute top-0 left-0 w-8 h-8 opacity-10 pointer-events-none">
                   <svg viewBox="0 0 100 100" className="w-full h-full fill-current text-primary">
