@@ -1,0 +1,41 @@
+Build a comprehensive, mobile-first Islamic Web Application (PWA) using React, Vite, and Tailwind CSS. The app must be fully responsive, support Arabic (RTL), and have a "soulful," high-quality aesthetic.
+
+### 1. Dedication (Sadaqah Jariyah) - **High Priority**:
+* **Splash Screen:** On the initial load, display a beautiful, fading-in animation with the text: "صدقة جارية عن روح أبو نشأت, ام نشأت, أبو سليم وأم سليم". It should fade out automatically after 3 seconds to reveal the main app.
+* **Persistent Footer:** Display this dedication text subtly in the sidebar or a non-intrusive footer on every page.
+
+### 2. Navigation & Layout:
+* **Style:** Use a **Sidebar Navigation (Drawer)** layout.
+* **Mobile Behavior:** On mobile, the sidebar should be hidden behind a "Hamburger Menu" icon. When opened, it slides out smoothly.
+* **Menu Items:** Quran, Prayer Times, Athkar (Azkar), Qibla.
+* **Theme:** Use a "Spiritual" palette: Cream/White backgrounds, Emerald Green accents, and Golden text for headings. Use subtle Islamic geometric patterns (Arabesque) as very low opacity background textures.
+
+### 3. The Holy Quran (Read & Tafsir):
+* **Source:** Use `api.quran.com`.
+* **Typography:** Use the 'Amiri' or 'Lateef' font (via Google Fonts) for all Arabic text to ensure it looks authentic and clear.
+* **Features:**
+    * List of Surahs.
+    * Reading view: Clicking an Ayah opens a modal with **Tafsir** and **Translation**.
+    * **Resume:** Save the last read position to `localStorage` and offer a "Continue Reading" button on the dashboard.
+
+### 4. Athkar (Remembrances):
+* Create a dedicated section for **Athkar (Morning & Evening)**.
+* **Data:** Since there is no reliable API for this, please include a local JSON dataset within the code containing standard "Athkar As-Sabah" and "Athkar Al-Masaa".
+* **UI:** Display them in readable cards with a "Counter" button (optional) to help the user count repetitions.
+
+### 5. Prayer Times (Visual Only):
+* **Source:** `aladhan.com` API (Auto-detect location with manual fallback).
+* **UI:** A clean dashboard card showing today's prayer times. Highlight the *next* prayer and show a countdown timer.
+* **Note:** Do NOT implement audio Adhan. Visual notifications only.
+
+### 6. Qibla Direction:
+* Calculate the bearing to the Kaaba using the user's coordinates.
+* Display a visual compass arrow (CSS rotation) pointing towards the Qibla.
+
+### Technical Stack:
+* `framer-motion` for smooth animations (splash screen, sidebar, page transitions).
+* `lucide-react` for icons.
+* `date-fns` for Hijri dates.
+* Ensure strictly RTL layout.
+
+Start by setting up the project structure, the Sidebar navigation, and the Dedication Splash Screen.
