@@ -1,27 +1,37 @@
-import path from "path";
-import { defineConfig, loadEnv } from "vite";
+import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import path from "path";
+import { fileURLToPath } from "url";
 
-export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), "");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-  // GitHub Pages base path (Project Pages: /<repo>/)
+export default defineConfig(async () => {
+  // GitHub Pages Project URL = /<repo>/
   const ghRepo = process.env.GITHUB_REPOSITORY?.split("/")?.[1];
   const ghBase =
     process.env.GITHUB_ACTIONS === "true" && ghRepo ? `/${ghRepo}/` : "/";
 
   return {
     base: ghBase,
+
+    // ✅ هنا المهم: خَلّي الجذر هو client (مكان index.html)
+    root: path.resolve(__dirname, "client"),
+
     plugins: [react()],
 
-    // ✅ خليك حاط كل إعداداتك الأصلية هون (alias/define/etc)
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "client", "src"),
+        "@shared": path.resolve(__dirname, "shared"),
+        "@assets": path.resolve(__dirname, "attached_assets"),
       },
     },
 
-    // مثال إذا كان عندك define سابقاً (اتركه زي ما هو عندك)
-    // define: { __APP_ENV__: JSON.stringify(env.APP_ENV) },
+    // ✅ وخلي الخرج ثابت على dist/public عشان الـ Pages workflow يرفعه
+    build: {
+      outDir: path.resolve(__dirname, "dist/public"),
+      emptyOutDir: true,
+    },
   };
 });
